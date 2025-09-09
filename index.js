@@ -7,7 +7,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 const app = express();
 
 // Admin ID ni yozing (o'zingizning Telegram ID'ingiz)
-const ADMIN_ID = 7712370635;
+const ADMIN_ID = 7911735881;
 
 bot.start(async (ctx) => {
   const user = ctx.from;
