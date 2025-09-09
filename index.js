@@ -6,7 +6,7 @@ import fetch from 'node-fetch';
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const app = express();
 
-// /start komandasi
+// start komandasi
 bot.start((ctx) => {
   const myUsername = '@nurmurodov_001';
   const taklif = '@istamov_265';
@@ -15,13 +15,13 @@ bot.start((ctx) => {
   ctx.reply("Assalomu alaykum! 🇺🇸 Ingliz ↔️ 🇺🇿 O‘zbek tarjimon bot.");
 });
 
-// Tarjima qilish
+// tarjima qismi
 bot.on("text", async (ctx) => {
   const text = ctx.message.text;
   const targetLang = /^[a-zA-Z\s\.\,\?\!]+$/.test(text) ? "uz" : "en";
 
   try {
-    const res = await fetch("https://translate.argosopentech.com/translate", {
+    const res = await fetch("https://translate.astian.org/translate", {
       method: "POST",
       body: JSON.stringify({
         q: text,
@@ -34,11 +34,11 @@ bot.on("text", async (ctx) => {
 
     const data = await res.json();
 
-    if (data.translatedText) {
-      ctx.reply(`📌 Tarjima (${targetLang}):\n${data.translatedText}`);
-    } else {
-      ctx.reply("❌ Tarjima olishning iloji bo‘lmadi.");
+    if (data.error) {
+      throw new Error(data.error);
     }
+
+    ctx.reply(`📌 Tarjima (${targetLang}):\n${data.translatedText}`);
   } catch (err) {
     console.error("Xatolik:", err);
     ctx.reply("❌ Tarjima qilishda xatolik yuz berdi.");
@@ -54,5 +54,4 @@ app.listen(PORT, () => {
   console.log(`🚀 Server ishga tushdi: ${PORT}`);
 });
 
-// Webhook URL chiqarish
 console.log(`Webhook URL: https://YOUR-RENDER-APP.onrender.com/webhook`);
