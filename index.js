@@ -1,6 +1,6 @@
 import 'dotenv/config';
-import express from 'express';
 import { Telegraf } from 'telegraf';
+import express from 'express';
 import fetch from 'node-fetch';
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -12,7 +12,7 @@ bot.start((ctx) => {
   const taklif = '@istamov_265';
   ctx.reply(`Bot asoschisi: AZIZBEKH NURMURODOV BAXSHILLOYEVICH\n${myUsername}`);
   ctx.reply(`Taklif va shikoyatlar uchun:\n${taklif}`);
-  ctx.reply("Assalomu alaikum! 🇺🇸 Ingliz ↔️ 🇺🇿 O‘zbek tarjimon bot.");
+  ctx.reply("Assalomu alaykum! 🇺🇸 Ingliz ↔️ 🇺🇿 O‘zbek tarjimon bot.");
 });
 
 // Tarjima qilish
@@ -21,7 +21,7 @@ bot.on("text", async (ctx) => {
   const targetLang = /^[a-zA-Z\s\.\,\?\!]+$/.test(text) ? "uz" : "en";
 
   try {
-    const res = await fetch("https://libretranslate.de/translate", {
+    const res = await fetch("https://translate.argosopentech.com/translate", {
       method: "POST",
       body: JSON.stringify({
         q: text,
@@ -33,21 +33,26 @@ bot.on("text", async (ctx) => {
     });
 
     const data = await res.json();
-    ctx.reply(`📌 Tarjima (${targetLang}):\n${data.translatedText}`);
+
+    if (data.translatedText) {
+      ctx.reply(`📌 Tarjima (${targetLang}):\n${data.translatedText}`);
+    } else {
+      ctx.reply("❌ Tarjima olishning iloji bo‘lmadi.");
+    }
   } catch (err) {
     console.error("Xatolik:", err);
     ctx.reply("❌ Tarjima qilishda xatolik yuz berdi.");
   }
 });
 
-// Render talab qiladigan port
+// Webhook o‘rnatish
+app.use(bot.webhookCallback(`/webhook`));
+
+// Render portni ochish
 const PORT = process.env.PORT || 4000;
-
-// Bot webhookini o‘rnatish
-app.use(bot.webhookCallback('/webhook'));
-
-app.listen(PORT, async () => {
-  const webhookUrl = `${process.env.RENDER_EXTERNAL_URL}/webhook`;
-  await bot.telegram.setWebhook(webhookUrl);
-  console.log(`🚀 Bot webhook rejimida ishlayapti: ${webhookUrl}`);
+app.listen(PORT, () => {
+  console.log(`🚀 Server ishga tushdi: ${PORT}`);
 });
+
+// Webhook URL chiqarish
+console.log(`Webhook URL: https://YOUR-RENDER-APP.onrender.com/webhook`);
