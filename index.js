@@ -6,7 +6,7 @@ import fetch from 'node-fetch';
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const app = express();
 
-// Admin ID ni yozing (o'zingizning Telegram ID'ingiz)
+// Admin ID (o'zingizning Telegram ID'ingiz)
 const ADMIN_ID = 7911735881;
 
 bot.start(async (ctx) => {
@@ -14,16 +14,19 @@ bot.start(async (ctx) => {
   const myUsername = '@nurmurodov_001';
   const taklif = '@istamov_265';
 
+  // Foydalanuvchi ismini aniqlash
+  const name = user.first_name || user.username || "Do‘st";
+
   // Foydalanuvchiga salom
-  await ctx.reply(`Assalomu alaykum, ${user.first_name || "do‘st"}! 🇺🇸 Ingliz ↔️ 🇺🇿 O‘zbek tarjimon bot.`);
+  await ctx.reply(`Assalomu alaykum, ${name}! 🇺🇸 Ingliz ↔️ 🇺🇿 O‘zbek tarjimon bot.`);
   await ctx.reply(`Bot asoschisi: AZIZBEKH NURMURODOV BAXSHILLOYEVICH\n${myUsername}`);
   await ctx.reply(`Taklif va shikoyatlar uchun:\n${taklif}`);
 
-  // Adminga xabar
+  // Adminga xabar yuborish
   await bot.telegram.sendMessage(
     ADMIN_ID,
-    `📢 Yangi foydalanuvchi start bosdi:\n\n` +
-    `👤 Ism: ${user.first_name || ""} ${user.last_name || ""}\n` +
+    `📢 Yangi foydalanuvchi start bosdi:\n` +
+    `👤 Ism: ${user.first_name || "Noma'lum"}\n` +
     `🔗 Username: @${user.username || "yo‘q"}\n` +
     `🆔 ID: ${user.id}`
   );
@@ -47,9 +50,7 @@ bot.on("text", async (ctx) => {
 
     const data = await res.json();
 
-    if (data.error) {
-      throw new Error(data.error);
-    }
+    if (data.error) throw new Error(data.error);
 
     ctx.reply(`📌 Tarjima (${targetLang}):\n${data.translatedText}`);
   } catch (err) {
@@ -67,5 +68,5 @@ app.listen(PORT, () => {
   console.log(`🚀 Server ishga tushdi: ${PORT}`);
 });
 
-// Haqiqiy Render URL bilan almashtiring
+// Render URL bilan almashtiring
 console.log(`Webhook URL: https://tgbot-5-zvse.onrender.com/webhook`);
